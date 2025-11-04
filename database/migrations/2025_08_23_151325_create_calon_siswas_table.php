@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('no_kontak');
             $table->text('alamat_lengkap');
             $table->string('nama_orang_tua');
-            $table->string('pengalaman_berlayar')->nullable()->change();
+            $table->string('pengalaman_berlayar')->nullable();
             $table->enum('status', ['pending', 'diterima', 'ditolak'])->default('pending');
             $table->text('catatan')->nullable();
             $table->timestamps();
