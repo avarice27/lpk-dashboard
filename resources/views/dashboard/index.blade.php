@@ -61,7 +61,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Calon Siswa</dt>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Siswa</dt>
                                         <dd class="text-lg font-medium text-gray-900">{{ $totalCalonSiswa }}</dd>
                                     </dl>
                                 </div>
@@ -221,14 +221,14 @@
                 <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Data Calon Siswa LPK</h3>
-                            <p class="mt-1 max-w-2xl text-sm text-gray-500">Daftar calon siswa yang mendaftar ke LPK
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Data Siswa LPK</h3>
+                            <p class="mt-1 max-w-2xl text-sm text-gray-500">Daftar siswa yang mendaftar ke LPK
                             </p>
                         </div>
                         @if ($isAdmin)
                             <a href="{{ route('calon-siswa.create') }}"
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                                <i class="fas fa-plus mr-2"></i>Tambah Calon Siswa
+                                <i class="fas fa-plus mr-2"></i>Tambah Siswa
                             </a>
                         @endif
                     </div>
@@ -248,6 +248,9 @@
                                     Nama Lengkap</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    TTL</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Umur</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -261,6 +264,9 @@
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Nama Orang Tua</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nomor Orang Tua</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Alamat Lengkap</th>
@@ -295,6 +301,9 @@
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $siswa->tempat_lahir ?? '-' }}, {{ $siswa->tanggal_lahir ? $siswa->tanggal_lahir->format('d-m-Y') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $siswa->umur }} tahun
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -308,7 +317,15 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $siswa->no_kontak }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $siswa->nama_orang_tua }}</td>
+                                        @if (preg_match('/Ayah: (.*) \| Ibu: (.*)/', $siswa->nama_orang_tua, $matches))
+                                            <div>Ayah: {{ $matches[1] }}</div>
+                                            <div>Ibu: {{ $matches[2] }}</div>
+                                        @else
+                                            {{ $siswa->nama_orang_tua }}
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $siswa->nomor_orang_tua ?? '-' }}</td>
                                     @php
                                         // pakai accessor dari model CalonSiswa
                                         $alamatText = $siswa->alamat_teks;
@@ -371,7 +388,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="px-6 py-4 text-center text-sm text-gray-500">
+                                    <td colspan="13" class="px-6 py-4 text-center text-sm text-gray-500">
                                         <i class="fas fa-info-circle mr-2"></i>
                                         Belum ada data calon siswa. @if ($isAdmin)
                                             Silakan tambah data baru.
@@ -415,6 +432,8 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div class="space-y-1">
+                                    <div><span class="text-gray-500">Tempat lahir:</span> <span
+                                            id="mTempat">-</span></div>
                                     <div><span class="text-gray-500">Tanggal lahir:</span> <span
                                             id="mTgl">-</span></div>
                                     <div><span class="text-gray-500">Tinggi/Berat:</span> <span
@@ -423,6 +442,8 @@
                                     <div><span class="text-gray-500">Kontak:</span> <span id="mKontak">-</span>
                                     </div>
                                     <div><span class="text-gray-500">Orang tua:</span> <span id="mOrtu">-</span>
+                                    </div>
+                                    <div><span class="text-gray-500">Nomor orang tua:</span> <span id="mNomorOrtu">-</span>
                                     </div>
                                 </div>
                                 <div class="space-y-1">
@@ -524,11 +545,13 @@
                 nama: document.getElementById('mNama'),
                 nomor: document.getElementById('mNomor'),
                 usia: document.getElementById('mUsia'),
+                tempat: document.getElementById('mTempat'),
                 tgl: document.getElementById('mTgl'),
                 tbBb: document.getElementById('mTbBb'),
                 bmi: document.getElementById('mBmi'),
                 kontak: document.getElementById('mKontak'),
                 ortu: document.getElementById('mOrtu'),
+                nomorOrtu: document.getElementById('mNomorOrtu'),
                 job: document.getElementById('mJob'),
                 sekolah: document.getElementById('mSekolah'),
                 pengalaman: document.getElementById('mPengalaman'),
@@ -577,12 +600,14 @@
                         el.usia.textContent = d.usia ?? '-';
 
                         // info kiri/kanan
+                        el.tempat.textContent = d.tempat_lahir ?? '-';
                         el.tgl.textContent = d.tanggal_lahir ?? '-';
                         el.tbBb.textContent = (d.tinggi_badan && d.berat_badan) ?
                             `${d.tinggi_badan} cm / ${d.berat_badan} kg` : '-';
                         el.bmi.textContent = d.bmi ?? '-';
                         el.kontak.textContent = d.no_kontak ?? '-';
                         el.ortu.textContent = d.nama_orang_tua ?? '-';
+                        el.nomorOrtu.textContent = d.nomor_orang_tua ?? '-';
                         el.job.textContent = d.job ?? '-';
                         el.sekolah.textContent = d.asal_sekolah ?? '-';
                         if (d.pengalaman) {

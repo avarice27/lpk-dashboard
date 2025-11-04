@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Calon Siswa - LPK Harini Duta Ayu Dashboard</title>
+    <title>Tambah Siswa - LPK Harini Duta Ayu Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -16,7 +16,7 @@
                         <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-gray-700 mr-4">
                             <i class="fas fa-arrow-left"></i>
                         </a>
-                        <h1 class="text-xl font-semibold text-gray-900">Tambah Calon Siswa</h1>
+                        <h1 class="text-xl font-semibold text-gray-900">Tambah Siswa</h1>
                     </div>
                     <div class="flex items-center space-x-4">
                         <span class="text-sm text-gray-500">
@@ -40,7 +40,34 @@
             <div class="px-4 py-6 sm:px-0">
                 <div class="bg-white shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Tambah Data Calon Siswa Baru</h3>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Tambah Data Siswa Baru</h3>
+                        @if (session('success'))
+<div id="notifSuccess"
+     class="fixed top-5 right-5 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-slide-in">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ session('success') }}</span>
+</div>
+@endif
+
+<style>
+@keyframes slide-in {
+  from {opacity: 0; transform: translateY(-10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+.animate-slide-in { animation: slide-in 0.3s ease-out; }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const notif = document.getElementById("notifSuccess");
+  if (notif) {
+    setTimeout(() => {
+      notif.classList.add("opacity-0", "transition", "duration-500");
+      setTimeout(() => notif.remove(), 500);
+    }, 4000);
+  }
+});
+</script>
 
                         <form method="POST" action="{{ route('calon-siswa.store') }}" class="space-y-6">
                             @csrf
@@ -82,6 +109,20 @@
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                            required>
                                     @error('tanggal_lahir')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="tempat_lahir" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Tempat Lahir <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="tempat_lahir" id="tempat_lahir"
+                                           value="{{ old('tempat_lahir') }}"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="Contoh: Jakarta"
+                                           required>
+                                    @error('tempat_lahir')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -168,14 +209,42 @@
 
 
                                 <div>
-                                    <label for="nama_orang_tua" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nama Orang Tua <span class="text-red-500">*</span>
+                                    <label for="nama_ayah" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Nama Ayah <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="nama_orang_tua" id="nama_orang_tua"
-                                           value="{{ old('nama_orang_tua') }}"
+                                    <input type="text" name="nama_ayah" id="nama_ayah"
+                                           value="{{ old('nama_ayah') }}"
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="Contoh: Ahmad Sutrisno"
                                            required>
-                                    @error('nama_orang_tua')
+                                    @error('nama_ayah')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="nama_ibu" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Nama Ibu <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="nama_ibu" id="nama_ibu"
+                                           value="{{ old('nama_ibu') }}"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="Contoh: Siti Aminah"
+                                           required>
+                                    @error('nama_ibu')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="nomor_orang_tua" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Nomor Orang Tua
+                                    </label>
+                                    <input type="text" name="nomor_orang_tua" id="nomor_orang_tua"
+                                           value="{{ old('nomor_orang_tua') }}"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="Contoh: 08123456789">
+                                    @error('nomor_orang_tua')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -231,6 +300,7 @@
             'handline'   => 'Handline',
             'trawl'      => 'Trawl',
             'lainnya'    => 'Lainnya',
+            'tidak ada'  => 'Tidak ada',
           ];
         @endphp
         <option value="">Pilih jenis</option>

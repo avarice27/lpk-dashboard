@@ -98,7 +98,7 @@
                 {{-- Nilai Akhir per Calon Siswa --}}
                 <div class="bg-white shadow rounded-lg p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold">Nilai Akhir per Calon Siswa (Top {{ $finalLimit }})</h2>
+                        <h2 class="text-lg font-semibold">Nilai Akhir per Siswa (Top {{ $finalLimit }})</h2>
                         <span class="text-sm text-gray-500">Sumber: Mata Pelajaran "Nilai Akhir"</span>
                     </div>
                     <div class="h-80">

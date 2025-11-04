@@ -9,8 +9,11 @@ class SiswaRecord extends Model
 {
     use HasFactory;
     protected $table = 'siswa_records';
-    protected $fillable = ['calon_siswa_id','alamat_id','status','photo_path','catatan'];
-    protected $casts = ['sign_on'=>'date','sign_off'=>'date'];
+    protected $fillable = ['calon_siswa_id','alamat_id','status','sign_on_date','sign_off_date', 'photo_path','catatan'];
+    protected $casts = [
+        'sign_on_date'=>'date',
+        'sign_off_date'=>'date'
+    ];
 
     public function calonSiswa() { return $this->belongsTo(CalonSiswa::class); }
     public function alamat()     { return $this->belongsTo(Alamat::class, 'alamat_id'); }

@@ -40,6 +40,7 @@ class CalonSiswaController extends Controller
             'asal_sekolah'  => $siswa->asal_sekolah,
             'no_kontak'     => $siswa->no_kontak,
             'nama_orang_tua'=> $siswa->nama_orang_tua,
+            'nomor_orang_tua' => $siswa->nomor_orang_tua,
             'pengalaman'    => $siswa->pengalaman_berlayar,
             'job'           => $siswa->job,
             'alamat' => [

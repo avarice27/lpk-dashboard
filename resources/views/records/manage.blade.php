@@ -89,12 +89,27 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                         <select name="status" class="w-full border rounded px-3 py-2">
-                            <option value="stand_by" @selected(old('status', $record->status ?? '')==='stand_by')>Stand By</option>
-                            <option value="on_job" @selected(old('status', $record->status ?? '')==='on_job')>On Job</option>
+                            <option value="">— Tidak Ada —</option>
+                            <option value="sign_on" @selected(old('status', $record->status ?? '') === 'sign_on')>Sign On</option>
+                            <option value="sign_off" @selected(old('status', $record->status ?? '') === 'sign_off')>Sign Off</option>
                         </select>
+                    </div>
 
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Sign On</label>
+                        <input type="date" name="sign_on_date"
+                            value="{{ old('sign_on_date', optional($record->sign_on_date)->format('Y-m-d')) }}"
+                            class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Sign Off</label>
+                        <input type="date" name="sign_off_date"
+                            value="{{ old('sign_off_date', optional($record->sign_off_date)->format('Y-m-d')) }}"
+                            class="w-full border rounded px-3 py-2">
                     </div>
                 </div>
+
 
                 {{-- Nilai Pelajaran --}}
                 <div>

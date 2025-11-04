@@ -142,14 +142,16 @@ class DashboardController extends Controller
             'nomor_peserta'      => ['required', 'string', 'max:20', 'unique:calon_siswas,nomor_peserta'],
             'nama_lengkap'       => ['required', 'string', 'max:255'],
             'tanggal_lahir'      => ['required', 'date'],
+            'tempat_lahir'       => ['required', 'string', 'max:255'],
             'tinggi_badan'       => ['required', 'integer', 'min:100', 'max:250'],
             'berat_badan'        => ['required', 'integer', 'min:30', 'max:150'],
             'asal_sekolah'       => ['required', 'string', 'max:255'],
             'no_kontak'          => ['required', 'string', 'max:20'],
-            'nama_orang_tua'     => ['required', 'string', 'max:255'],
+            'nama_ayah'          => ['required', 'string', 'max:255'],
+            'nama_ibu'           => ['required', 'string', 'max:255'],
             // 'pengalaman_berlayar' => ['required', 'string', 'max:255'],
-            'pengalaman_lokasi'       => ['required', Rule::in(['lokal','internasional', 'tidak ada pengalaman'])],
-            'pengalaman_jenis'        => ['required', Rule::in(['purse_seine','long_line','pole_line','handline','trawl','lainnya'])],
+            'pengalaman_lokasi'       => ['required', Rule::in(['lokal','internasional','tidak ada pengalaman'])],
+            'pengalaman_jenis'        => ['required', Rule::in(['purse_seine','long_line','pole_line','handline','trawl','lainnya','tidak ada'])],
             'pengalaman_durasi_bulan' => ['required','integer','min:0','max:24'],
             'job'                => ['required', Rule::in(['Cook', 'Deck', 'Engine', 'No Job'])],
             'catatan'            => ['nullable', 'string'],
@@ -170,10 +172,14 @@ class DashboardController extends Controller
         ]);
 
 
+        // Gabungkan nama ayah dan ibu ke format "Ayah: [nama_ayah] | Ibu: [nama_ibu]"
+        $data['nama_orang_tua'] = "Ayah: {$data['nama_ayah']} | Ibu: {$data['nama_ibu']}";
+
         $calonSiswa = CalonSiswa::create(collect($data)->only([
             'nomor_peserta',
             'nama_lengkap',
             'tanggal_lahir',
+            'tempat_lahir',
             'tinggi_badan',
             'berat_badan',
             'asal_sekolah',
@@ -197,29 +203,43 @@ class DashboardController extends Controller
         $lastUpdated = $calonSiswa->updated_at ?? now();
 
         return redirect()
-            ->route('dashboard')
-            ->with('success', 'Data calon siswa berhasil ditambahkan!')
-            ->with('lastUpdated', $lastUpdated);
+    ->route('calon-siswa.edit', $calonSiswa->id)
+    ->with('success', 'Data calon siswa berhasil disimpan!');
+
+
     }
 
     public function edit($id)
     {
         $siswa = CalonSiswa::with('alamat')->findOrFail($id);
-        // Selalu definisikan dulu
-    $lokasiNow = null;
-    $jenisNow  = null;
-    $durNow    = null;
 
-    // Parse "lokasi|jenis|durasi" menjadi 3 nilai (kalau kosong diisi null)
-    [$lokasiNow, $jenisNow, $durNow] = array_pad(
-        explode('|', (string) $siswa->pengalaman_berlayar, 3),
-        3,
-        null
-    );
-    $lokasiNow = old('pengalaman_lokasi', $lokasiNow);
-    $jenisNow  = old('pengalaman_jenis',  $jenisNow);
-    $durNow    = old('pengalaman_durasi_bulan', $durNow);
-        return view('dashboard.edit', compact('siswa', 'lokasiNow', 'jenisNow', 'durNow'));
+        // Selalu definisikan dulu
+        $lokasiNow = null;
+        $jenisNow  = null;
+        $durNow    = null;
+        $namaAyahNow = null;
+        $namaIbuNow = null;
+
+        // Parse "lokasi|jenis|durasi" menjadi 3 nilai (kalau kosong diisi null)
+        [$lokasiNow, $jenisNow, $durNow] = array_pad(
+            explode('|', (string) $siswa->pengalaman_berlayar, 3),
+            3,
+            null
+        );
+
+        // Parse "Ayah: [nama_ayah] | Ibu: [nama_ibu]" menjadi 2 nilai
+        if (preg_match('/Ayah: (.*) \| Ibu: (.*)/', $siswa->nama_orang_tua, $matches)) {
+            $namaAyahNow = $matches[1];
+            $namaIbuNow = $matches[2];
+        }
+
+        $lokasiNow = old('pengalaman_lokasi', $lokasiNow);
+        $jenisNow  = old('pengalaman_jenis',  $jenisNow);
+        $durNow    = old('pengalaman_durasi_bulan', $durNow);
+        $namaAyahNow = old('nama_ayah', $namaAyahNow);
+        $namaIbuNow = old('nama_ibu', $namaIbuNow);
+
+        return view('dashboard.edit', compact('siswa', 'lokasiNow', 'jenisNow', 'durNow', 'namaAyahNow', 'namaIbuNow'));
     }
 
     public function update(Request $request, $id)
@@ -235,14 +255,16 @@ class DashboardController extends Controller
             ],
             'nama_lengkap'       => ['required', 'string', 'max:255'],
             'tanggal_lahir'      => ['required', 'date'],
+            'tempat_lahir'       => ['required', 'string', 'max:255'],
             'tinggi_badan'       => ['required', 'integer', 'min:100', 'max:250'],
             'berat_badan'        => ['required', 'integer', 'min:30', 'max:150'],
             'asal_sekolah'       => ['required', 'string', 'max:255'],
             'no_kontak'          => ['required', 'string', 'max:20'],
-            'nama_orang_tua'     => ['required', 'string', 'max:255'],
+            'nama_ayah'          => ['required', 'string', 'max:255'],
+            'nama_ibu'           => ['required', 'string', 'max:255'],
             // 'pengalaman_berlayar' => ['required', 'string', 'max:255'],
-            'pengalaman_lokasi'       => ['required', Rule::in(['lokal','internasional'])],
-            'pengalaman_jenis'        => ['required', Rule::in(['purse_seine','long_line','pole_line','handline','trawl','tidak ada'])],
+            'pengalaman_lokasi'       => ['required', Rule::in(['lokal','internasional','tidak ada pengalaman'])],
+            'pengalaman_jenis'        => ['required', Rule::in(['purse_seine','long_line','pole_line','handline','trawl','lainnya','tidak ada'])],
             'pengalaman_durasi_bulan' => ['required','integer','min:0','max:24'],
 
             'job'                => ['required', Rule::in(['Cook', 'Deck', 'Engine', 'No Job'])],
@@ -261,11 +283,15 @@ class DashboardController extends Controller
         $data['pengalaman_jenis'],
         (int)$data['pengalaman_durasi_bulan'],
     ]);
+        // Gabungkan nama ayah dan ibu ke format "Ayah: [nama_ayah] | Ibu: [nama_ibu]"
+        $data['nama_orang_tua'] = "Ayah: {$data['nama_ayah']} | Ibu: {$data['nama_ibu']}";
+
         // update calon siswa
         $siswa->update(collect($data)->only([
             'nomor_peserta',
             'nama_lengkap',
             'tanggal_lahir',
+            'tempat_lahir',
             'tinggi_badan',
             'berat_badan',
             'asal_sekolah',
